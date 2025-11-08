@@ -1,8 +1,85 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app/app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
+import compression from 'compression';
+import { Environment } from './infra/config/env.validation';
+import { I18nMiddleware } from 'nestjs-i18n';
+import { I18nGqlExceptionFilter } from './common/filters/i18n-exception.filter';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-}
-bootstrap();
+const bootstrap = async () => {
+  try {
+    const app = await NestFactory.create(AppModule);
+
+    app.use(
+      helmet({
+        crossOriginEmbedderPolicy: false,
+        contentSecurityPolicy: {
+          directives: {
+            imgSrc: [
+              `'self'`,
+              'data:',
+              'apollo-server-landing-page.cdn.apollographql.com',
+            ],
+            scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+            manifestSrc: [
+              `'self'`,
+              'apollo-server-landing-page.cdn.apollographql.com',
+            ],
+            frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
+          },
+        },
+      }),
+    );
+
+    app.use(compression());
+    app.use(graphqlUploadExpress({ maxFileSize: 10_000_000, maxFiles: 1 })); // 10MB
+
+    // Global validation
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true, // strip unknown properties
+        forbidNonWhitelisted: true, // throw error if unknown props
+        transform: true, // auto-transform payloads to DTO classes
+      }),
+    );
+
+    // Global i18n validation
+    app.useGlobalFilters(new I18nGqlExceptionFilter());
+    app.use(I18nMiddleware);
+
+    // Config service
+    const configService = app.get(ConfigService);
+    const port = configService.get<number>('app.port') ?? 3000;
+    const nodeEnv =
+      configService.get<Environment>('app.nodeEnv') ?? Environment.Development;
+    const frontendUrl = configService.get<string>('app.frontendUrl') ?? '*';
+
+    // Enable CORS
+    app.enableCors({
+      origin: [Environment.Development, Environment.Local].includes(nodeEnv)
+        ? [
+            'http://localhost:5173',
+            'http://localhost:3001',
+            'http://localhost:3000',
+          ]
+        : frontendUrl,
+      credentials: true,
+    });
+
+    await app.listen(port);
+
+    if ([Environment.Development, Environment.Local].includes(nodeEnv)) {
+      console.log(`🚀 Application is running on: http://localhost:${port}`);
+    } else {
+      console.log(`✅ Application started on port ${port} in ${nodeEnv} mode`);
+    }
+  } catch (error) {
+    console.error('❌ Error during application bootstrap:', error);
+    throw error;
+  }
+};
+
+void bootstrap();
