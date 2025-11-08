@@ -1,0 +1,29 @@
+services:
+  app:
+    command: sh -c "yarn install && yarn start:dev"
+    # command: sh -c "rm -f node_trace.*.log && npx clinic doctor --on-port 'autocannon http://localhost:$PORT' -- node dist/main.js"
+    # command: sh -c "rm -f node_trace.*.log && npm install -g clinic autocannon && clinic flame --on-port 'autocannon http://localhost:$PORT' -- node dist/main.js"
+    # command: sh -c "rm -f node_trace.*.log && npm install -g clinic autocannon && clinic heapprofiler --on-port 'autocannon http://localhost:$PORT' -- node dist/main.js"
+    # command: sh -c "rm -f node_trace.*.log && npm install -g clinic autocannon && clinic bubbleprof --on-port 'autocannon http://localhost:$PORT' -- node dist/main.js"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules # keep container's node_modules
+      # - ./.clinic:/usr/src/app/.clinic # clinic.js output directory
+    environment:
+      CLINIC_NO_USAGE_DATA: "1"
+      PROFILE_TYPE: ${PROFILE_TYPE:-none} # doctor | flame | bubbleprof | heapprofiler | none
+    restart: "${PROFILE_TYPE:+no}"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: ridely_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-net

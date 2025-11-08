@@ -1,0 +1,35 @@
+{
+  "id": null,
+  "title": "Ridely API Metrics",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Process CPU Usage (Seconds)",
+      "targets": [
+        { "expr": "process_cpu_user_seconds_total", "legendFormat": "CPU" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap Memory Used (Bytes)",
+      "targets": [{ "expr": "nodejs_heap_used_bytes", "legendFormat": "Heap" }],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests per Second",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes / nodejs_heap_size_total_bytes * 100",
+          "legendFormat": "req/s"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 }
+    }
+  ],
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" }
+}

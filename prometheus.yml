@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'nestjs'
+    static_configs:
+      - targets: ['app:4000'] # or localhost:4000 if not in Docker

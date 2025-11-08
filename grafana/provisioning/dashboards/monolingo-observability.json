@@ -1,0 +1,137 @@
+{
+  "id": null,
+  "title": "Ridely Observability Overview",
+  "schemaVersion": 36,
+  "version": 2,
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (seconds)",
+      "targets": [
+        {
+          "expr": "rate(process_cpu_user_seconds_total[1m])",
+          "legendFormat": "CPU"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap Memory Used (bytes)",
+      "targets": [
+        { "expr": "nodejs_heap_size_used_bytes", "legendFormat": "Heap Used" }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap Memory Usage (%)",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes / nodejs_heap_size_total_bytes * 100",
+          "legendFormat": "Heap Usage %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "green" }, { "value": 80, "color": "red" }]
+          }
+        }
+      },
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Process RSS Memory (bytes)",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes",
+          "legendFormat": "RSS"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap Spaces Breakdown",
+      "targets": [
+        {
+          "expr": "nodejs_heap_space_size_used_bytes",
+          "legendFormat": "{{space}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests per Second",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_count[1m])",
+          "legendFormat": "req/s"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 18, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Request Latency",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95 latency"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99 latency"
+        },
+        {
+          "expr": "histogram_quantile(0.999, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p999 latency"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 18, "w": 12, "h": 6 }
+    },
+    {
+      "type": "logs",
+      "title": "Real-Time Logs (Loki)",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1, "criteria": "warn" },
+              { "color": "red", "value": 2, "criteria": "error" }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "{job=\"docker\", container_name=\"ridely_api\"}",
+          "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "showLabels": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": true
+      },
+      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 10 }
+    }
+  ]
+}

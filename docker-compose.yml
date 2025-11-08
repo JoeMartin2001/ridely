@@ -1,0 +1,171 @@
+networks:
+  app-net:
+
+services:
+  app:
+    build: .
+    container_name: ridely_api
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      # These are resolved from the env file you pass with --env-file
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      FRONTEND_URL: ${FRONTEND_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SSL: ${DB_SSL}
+
+      # --- S3/MinIO wiring ---
+      S3_BUCKET: ${S3_BUCKET} # e.g. ridely
+      S3_ENDPOINT: http://minio:9000 # internal URL from app -> minio
+      S3_PUBLIC_ENDPOINT: http://localhost:9000
+      S3_REGION: us-east-1 # arbitrary for MinIO
+      S3_KEY: ${S3_KEY} # service access key (created below)
+      S3_SECRET: ${S3_SECRET}
+      S3_FORCE_PATH_STYLE: "true" # important for MinIO
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["node", "dist/main.js"] # overridden in dev
+    networks: [app-net]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: ridely_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME} # <-- auto-creates DB on first init
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -h localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [app-net]
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    # expose to localhost only (optional)
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API
+      - "127.0.0.1:9001:9001" # Web console
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER} # must be >= 3 chars
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD} # >= 8 chars
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks: [app-net]
+    restart: unless-stopped
+
+  # One-shot init container to:
+  #  - wait for MinIO
+  #  - create bucket
+  #  - set public-read (optional)
+  #  - apply CORS
+  #  - create a service access key pair for your app
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}); do
+        echo 'waiting for minio...'; sleep 2;
+      done;
+      /usr/bin/mc mb -p local/${S3_BUCKET} || true;
+      # Optional: make bucket public read (for CDN-style direct GETs)
+      /usr/bin/mc anonymous set download local/${S3_BUCKET} || true;
+      # Apply CORS
+      /usr/bin/mc anonymous set cors local/${S3_BUCKET} /cors.json || true;
+      # Create service account (static creds for your app)
+      /usr/bin/mc admin user svcacct add local ${MINIO_ROOT_USER} --access-key ${S3_KEY} --secret-key ${S3_SECRET} || true;
+      echo 'MinIO ready.';
+      "
+    volumes:
+      - ./cors.json:/cors.json:ro
+    networks: [app-net]
+
+  # --- Prometheus (Metrics Collector) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks: [app-net]
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # --- Loki (Logs Collector) ---
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks: [app-net]
+    restart: unless-stopped
+
+  # --- Promtail (Log Shipper) ---
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks: [app-net]
+    depends_on:
+      - loki
+    restart: unless-stopped
+
+  # --- Grafana (Dashboards) ---
+  # Node JS Dashboard ID - 11159
+  # Minio Dashboard ID - 13502
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000" # host:container
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}'
+      - TELEGRAM_CHAT_ID='${TELEGRAM_CHAT_ID}'
+      - TELEGRAM_MESSAGE_THREAD_ID=${TELEGRAM_MESSAGE_THREAD_ID}
+      - PROMETHEUS_UID=${PROMETHEUS_UID}
+      - LOKI_UID=${LOKI_UID}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    networks: [app-net]
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  minio_data:
+  grafana_data:
