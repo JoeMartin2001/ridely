@@ -6,8 +6,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import {
-  LoginRequest,
-  LoginResponse,
   NormalizeMessageResponse,
   PhoneOTPBatchRequest,
   PhoneOTPBatchResponse,
@@ -16,11 +14,31 @@ import {
   PhoneOTPInterface,
   PhoneOTPRequest,
   PhoneOTPResponse,
-  RefreshTokenRequest,
-  RefreshTokenResponse,
 } from 'src/infra/phone-otp/interfaces/PhoneOTPInterface';
 import FormData from 'form-data';
 import { I18nService } from 'nestjs-i18n';
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  data: {
+    token: string;
+  };
+}
+
+export interface RefreshTokenRequest {
+  refresh_token: string;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
 @Injectable()
 export class EskizService implements PhoneOTPInterface {
   private readonly eskizEmailAddress: string;
@@ -86,20 +104,34 @@ export class EskizService implements PhoneOTPInterface {
     }
   }
 
-  async refreshToken(
-    refreshTokenRequest: RefreshTokenRequest,
-  ): Promise<RefreshTokenResponse> {
-    const response = await axios.post(
-      'https://notify.eskiz.uz/api/auth/refresh',
-      refreshTokenRequest,
-      {
+  async refreshToken(): Promise<RefreshTokenResponse> {
+    try {
+      const response = await axios({
+        method: 'patch',
+        maxBodyLength: Infinity,
+        url: 'https://notify.eskiz.uz/api/auth/refresh',
         headers: {
           Authorization: `Bearer ${this.eskizToken}`,
         },
-      },
-    );
+      });
 
-    return response.data as RefreshTokenResponse;
+      const responseData = response.data as RefreshTokenResponse;
+
+      this.eskizToken = responseData.access_token;
+
+      return responseData;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(errorMessage);
+
+      throw new InternalServerErrorException(
+        this.i18n.t('error.internal_server_error', {
+          args: { message: errorMessage },
+        }),
+      );
+    }
   }
 
   async send(phoneOTP: PhoneOTPRequest): Promise<PhoneOTPResponse> {

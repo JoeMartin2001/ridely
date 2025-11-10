@@ -47,33 +47,11 @@ export interface NormalizeMessageResponse {
   }[];
 }
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  message: string;
-  data: {
-    token: string;
-  };
-}
-
-export interface RefreshTokenRequest {
-  refresh_token: string;
-}
-
-export interface RefreshTokenResponse {
-  access_token: string;
-  refresh_token: string;
-}
-
 export interface PhoneOTPInterface {
-  login(loginRequest: LoginRequest): Promise<LoginResponse>;
-  refreshToken(
-    refreshTokenRequest: RefreshTokenRequest,
-  ): Promise<RefreshTokenResponse>;
   send(phoneOTP: PhoneOTPRequest): Promise<PhoneOTPResponse>;
   sendBatch(phoneOTP: PhoneOTPBatchRequest): Promise<PhoneOTPBatchResponse>;
+  sendGlobalMessage(
+    phoneOTPGlobalRequest: PhoneOTPGlobalRequest,
+  ): Promise<PhoneOTPGlobalResponse>;
   normalizeMessage(message: string): Promise<NormalizeMessageResponse>;
 }
