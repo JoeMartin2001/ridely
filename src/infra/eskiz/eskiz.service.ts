@@ -12,7 +12,7 @@ import {
   PhoneOTPResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
-} from 'src/modules/auth/interfaces/PhoneOTPInterface';
+} from 'src/infra/phone-otp/interfaces/PhoneOTPInterface';
 
 @Injectable()
 export class EskizService implements PhoneOTPInterface {
