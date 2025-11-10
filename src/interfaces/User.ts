@@ -1,57 +1,45 @@
 import { registerEnumType } from '@nestjs/graphql';
-
-// Enum for CEFR levels
-export enum LanguageLevel {
-  A1 = 'A1',
-  A2 = 'A2',
-  B1 = 'B1',
-  B2 = 'B2',
-  C1 = 'C1',
-  C2 = 'C2',
-}
-
-registerEnumType(LanguageLevel, {
-  name: 'LanguageLevel', // 👈 GraphQL schema type name
-  description: 'CEFR language proficiency levels',
-});
+import { IVehicle } from './Vehicle';
+import { PaymentMethod } from './Payment';
 
 // User account
 export interface IUser {
   id: string;
   email: string;
-  password?: string;
-  username: string;
-  nativeLanguage: string; // e.g., "uz", "en"
-  targetLanguage: string; // e.g., "en", "de"
-  level: LanguageLevel; // starting level (A1–C2)
-  authProvider: IUserAuthProvider;
-  googleId?: string;
-  bio?: string;
-  avatarUrl?: string;
-  emailVerified: boolean;
-  emailVerifiedAt: Date | null;
-  role: IUserRole;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  dateOfBirth: Date;
+  profilePicture?: string;
+  isVerified: boolean;
 
   createdAt: Date;
   updatedAt: Date;
 }
 
-export enum IUserRole {
-  STUDENT = 'student',
-  TUTOR = 'tutor',
+export interface IDriver extends IUser {
+  driverLicense?: string;
+  licensePlate?: string;
+  carDetails?: IVehicle;
+  totalTrips: number;
+  rating: number;
+  isOnline: boolean;
+  verificationStatus: VerificationStatus;
 }
 
-registerEnumType(IUserRole, {
-  name: 'IUserRole', // 👈 GraphQL schema type name
-  description: 'User roles',
-});
-
-export enum IUserAuthProvider {
-  LOCAL = 'local',
-  GOOGLE = 'google',
+export interface IPassenger extends IUser {
+  preferredPaymentMethod: PaymentMethod;
+  totalTrips: number;
+  rating: number;
 }
 
-registerEnumType(IUserAuthProvider, {
-  name: 'IUserAuthProvider', // 👈 GraphQL schema type name
-  description: 'User auth providers',
+export enum VerificationStatus {
+  PENDING = 'pending',
+  VERIFIED = 'verified',
+  REJECTED = 'rejected',
+}
+
+registerEnumType(VerificationStatus, {
+  name: 'VerificationStatus',
+  description: 'Verification status',
 });
