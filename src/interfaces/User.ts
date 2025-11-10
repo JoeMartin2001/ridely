@@ -9,13 +9,41 @@ export interface IUser {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  dateOfBirth: Date;
-  profilePicture?: string;
-  isVerified: boolean;
+  dateOfBirth: Date | null;
+
+  password?: string;
+  username: string;
+  authProvider: IUserAuthProvider;
+  googleId?: string;
+  bio?: string;
+  avatarUrl?: string;
+  emailVerified: boolean;
+  emailVerifiedAt: Date | null;
+  type: IUserType;
 
   createdAt: Date;
   updatedAt: Date;
 }
+
+export enum IUserType {
+  DRIVER = 'driver',
+  PASSENGER = 'passenger',
+}
+
+registerEnumType(IUserType, {
+  name: 'IUserType', // 👈 GraphQL schema type name
+  description: 'User types',
+});
+
+export enum IUserAuthProvider {
+  LOCAL = 'local',
+  GOOGLE = 'google',
+}
+
+registerEnumType(IUserAuthProvider, {
+  name: 'IUserAuthProvider', // 👈 GraphQL schema type name
+  description: 'User auth providers',
+});
 
 export interface IDriver extends IUser {
   driverLicense?: string;

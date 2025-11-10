@@ -11,13 +11,9 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsDate,
 } from 'class-validator';
-import {
-  IUser,
-  IUserAuthProvider,
-  IUserRole,
-  LanguageLevel,
-} from 'src/interfaces/User';
+import { IUser, IUserAuthProvider, IUserType } from 'src/interfaces/User';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { TableName } from 'src/common/constants/TableName';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
@@ -28,6 +24,30 @@ export class User implements IUser {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id!: string;
+
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  @Column({ nullable: true })
+  firstName!: string;
+
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  @Column({ nullable: true })
+  lastName!: string;
+
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  @Column({ nullable: true })
+  phoneNumber!: string;
+
+  @Field()
+  @IsDate()
+  @IsNotEmpty()
+  @Column({ nullable: true })
+  dateOfBirth!: Date | null;
 
   @Field()
   @IsEmail()
@@ -51,24 +71,8 @@ export class User implements IUser {
   authProvider!: IUserAuthProvider;
 
   @Field()
-  @Column({ default: IUserRole.STUDENT })
-  role!: IUserRole;
-
-  @Field(() => [String])
-  @Column('text', { array: true, default: [] })
-  languagesLearning!: string[];
-
-  @Field(() => [String])
-  @Column('text', { array: true, default: [] })
-  languagesTeaching!: string[];
-
-  @Field(() => Boolean)
-  @Column({ default: false })
-  isStudent!: boolean;
-
-  @Field(() => LanguageLevel)
-  @Column({ default: LanguageLevel.A1 })
-  level!: LanguageLevel;
+  @Column({ default: IUserType.DRIVER })
+  type!: IUserType;
 
   @Field()
   @IsOptional()
@@ -91,14 +95,6 @@ export class User implements IUser {
   @Field()
   @Column({ default: '' })
   username!: string;
-
-  @Field()
-  @Column({ default: '' })
-  nativeLanguage!: string;
-
-  @Field()
-  @Column({ default: '' })
-  targetLanguage!: string;
 
   @Field(() => Boolean)
   @IsBoolean()

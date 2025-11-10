@@ -8,17 +8,27 @@ import {
   MinLength,
   IsUrl,
   IsBoolean,
-  IsArray,
+  IsDate,
 } from 'class-validator';
-import {
-  IUserRole,
-  IUserAuthProvider,
-  LanguageLevel,
-  IUser,
-} from 'src/interfaces/User';
+import { IUserAuthProvider, IUser, IUserType } from 'src/interfaces/User';
 
 @InputType()
 export class CreateUserInput implements Partial<IUser> {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
   @Field(() => String)
   @IsEmail()
   email!: string;
@@ -28,23 +38,16 @@ export class CreateUserInput implements Partial<IUser> {
   @MinLength(3)
   username!: string;
 
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  @IsOptional()
+  @IsDate()
+  dateOfBirth?: Date | null;
+
   // Optional: for OAuth-created users you can omit password
   @Field(() => String, { nullable: true })
   @IsString()
   @MinLength(6)
   password!: string;
-
-  @Field(() => String)
-  @IsString()
-  nativeLanguage!: string;
-
-  @Field(() => String)
-  @IsString()
-  targetLanguage!: string;
-
-  @Field(() => LanguageLevel)
-  @IsEnum(LanguageLevel)
-  level!: LanguageLevel;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -57,10 +60,10 @@ export class CreateUserInput implements Partial<IUser> {
   avatarUrl?: string;
 
   // Admin/server-controlled knobs (optional)
-  @Field(() => IUserRole, { nullable: true })
+  @Field(() => IUserType, { nullable: true })
   @IsOptional()
-  @IsEnum(IUserRole)
-  role?: IUserRole;
+  @IsEnum(IUserType)
+  type?: IUserType;
 
   @Field(() => IUserAuthProvider, { nullable: true })
   @IsOptional()
@@ -83,21 +86,4 @@ export class CreateUserInput implements Partial<IUser> {
   @Field(() => GraphQLISODateTime, { nullable: true })
   @IsOptional()
   emailVerifiedAt?: Date | null;
-
-  @Field(() => [String], { nullable: true })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  languagesLearning?: string[];
-
-  @Field(() => [String], { nullable: true })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  languagesTeaching?: string[];
-
-  @Field(() => Boolean, { nullable: true })
-  @IsOptional()
-  @IsBoolean()
-  isStudent?: boolean;
 }

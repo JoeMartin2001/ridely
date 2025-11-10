@@ -11,11 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { Auth } from './entities/auth.entity';
-import {
-  IUserAuthProvider,
-  IUserRole,
-  LanguageLevel,
-} from 'src/interfaces/User';
+import { IUserAuthProvider, IUserType } from 'src/interfaces/User';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { PasswordResetToken } from './entities/password-reset-token.entity';
@@ -355,19 +351,12 @@ export class AuthService {
             email,
             username: nameSlug,
             password: randomHash, // or null if column is nullable
-            nativeLanguage: 'uz',
-            targetLanguage: 'en',
-            level: LanguageLevel.A1,
             bio: '',
             avatarUrl: picture,
-            role: IUserRole.STUDENT,
             googleId,
             authProvider: IUserAuthProvider.GOOGLE,
             emailVerified: true,
             emailVerifiedAt: new Date(),
-            languagesLearning: [],
-            languagesTeaching: [],
-            isStudent: true,
           });
         }
       }
@@ -401,7 +390,7 @@ export class AuthService {
       password: hashedPassword,
       emailVerified: false,
       emailVerifiedAt: null,
-      role: IUserRole.STUDENT,
+      type: IUserType.PASSENGER,
       avatarUrl: undefined,
     });
 

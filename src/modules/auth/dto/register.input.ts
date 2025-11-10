@@ -1,12 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { IUser, LanguageLevel } from 'src/interfaces/User';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IUser } from 'src/interfaces/User';
 
 @InputType()
 export class RegisterInput implements Partial<IUser> {
@@ -23,18 +17,6 @@ export class RegisterInput implements Partial<IUser> {
   @IsString()
   @MinLength(6)
   password!: string;
-
-  @Field(() => String)
-  @IsString()
-  nativeLanguage!: string;
-
-  @Field(() => String)
-  @IsString()
-  targetLanguage!: string;
-
-  @Field(() => LanguageLevel)
-  @IsEnum(LanguageLevel)
-  level!: LanguageLevel;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
