@@ -119,6 +119,9 @@ class EnvironmentVariables {
   @IsString()
   SUPABASE_SERVICE_ROLE_KEY!: string;
 
+  @IsString()
+  SUPABASE_DATABASE_URL!: string;
+
   // ───── Eskiz ─────
   @IsString()
   ESKIZ_EMAIL_ADDRESS!: string;
