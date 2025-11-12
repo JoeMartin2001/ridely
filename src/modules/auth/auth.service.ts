@@ -35,13 +35,13 @@ export class AuthService {
       this.configService.get('app.googleClientId'),
     );
 
-    this.FRONTEND_URL =
-      this.configService.get<string>('app.frontendUrl') ??
-      'http://localhost:3001';
+    this.FRONTEND_URL = this.configService.get<string>('app.frontendUrl') ?? '';
 
     this.supabasePhoneSecret =
-      this.configService.get<string>('app.supabasePhoneSecret') ??
-      'ridely-default-phone-secret';
+      this.configService.get<string>('app.supabasePhoneSecret') ?? '';
+
+    this.logger.log(this.FRONTEND_URL);
+    this.logger.log(this.supabasePhoneSecret);
   }
 
   async signup(signupInput: RegisterInput) {

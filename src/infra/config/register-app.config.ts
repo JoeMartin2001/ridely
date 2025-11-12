@@ -49,6 +49,8 @@ export default registerAs('app', () => ({
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
 
+  supabasePhoneSecret:
+    process.env.SUPABASE_PHONE_SECRET || 'ridely-default-phone-secret',
   supabaseDatabaseUrl: process.env.SUPABASE_DATABASE_URL,
 
   // Eskiz
