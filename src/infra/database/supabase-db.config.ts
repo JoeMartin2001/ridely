@@ -1,7 +1,7 @@
 // supabase-db.config.ts
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-// import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { User } from 'src/modules/user/entities/user.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
@@ -45,6 +45,10 @@ export const supabaseDbConfig = (
       configService.get<Environment>('app.nodeEnv')!,
     ),
 
+    // Drop schema in local development only (dangerous - use with caution)
+    // dropSchema:
+    //   configService.get<Environment>('app.nodeEnv') === Environment.Local,
+
     // Logging
     logging: [Environment.Development, Environment.Local].includes(
       configService.get<Environment>('app.nodeEnv')!,
@@ -58,6 +62,6 @@ export const supabaseDbConfig = (
     connectTimeoutMS: 10000, // 10 seconds
     maxQueryExecutionTime: 5000, // 5 seconds
 
-    // namingStrategy: new SnakeNamingStrategy(),
+    namingStrategy: new SnakeNamingStrategy(),
   };
 };

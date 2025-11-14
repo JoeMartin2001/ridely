@@ -6,16 +6,13 @@ import { supabaseDbConfig } from './supabase-db.config';
 
 @Module({
   imports: [
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (config: ConfigService) => typeOrmConfig(config),
-    // }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        supabaseDbConfig(configService),
+      useFactory: (configService: ConfigService) => {
+        // return typeOrmConfig(configService);
+        return supabaseDbConfig(configService);
+      },
     }),
   ],
 })

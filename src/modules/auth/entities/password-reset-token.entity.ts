@@ -18,11 +18,14 @@ export class PasswordResetToken {
   id!: string;
 
   @Index()
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', name: 'user_id' })
   userId!: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+    createForeignKeyConstraints: true,
+  })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user!: User;
 
   // store ONLY the hash

@@ -1,5 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+
 import { User } from 'src/modules/user/entities/user.entity';
 import { PasswordResetToken } from 'src/modules/auth/entities/password-reset-token.entity';
 import { Environment } from '../config/env.validation';
@@ -32,4 +34,6 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
     Ride,
   ],
   dropSchema: true,
+
+  namingStrategy: new SnakeNamingStrategy(),
 });
