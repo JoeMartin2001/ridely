@@ -10,6 +10,8 @@ import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
 import { PasswordResetToken } from 'src/modules/auth/entities/password-reset-token.entity';
 import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
 import { Environment } from '../config/env.validation';
+import { RegionEntity } from 'src/modules/regions/entities/region.entity';
+import { DistrictEntity } from 'src/modules/districts/entites/district.entity';
 
 export const supabaseDbConfig = (
   configService: ConfigService,
@@ -38,6 +40,8 @@ export const supabaseDbConfig = (
       OTPCodeEntity,
       PasswordResetToken,
       EmailVerificationToken,
+      RegionEntity,
+      DistrictEntity,
     ],
 
     // Synchronize should be false in production

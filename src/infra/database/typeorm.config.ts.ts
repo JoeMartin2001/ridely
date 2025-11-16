@@ -8,6 +8,8 @@ import { Environment } from '../config/env.validation';
 import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
 import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
+import { RegionEntity } from 'src/modules/regions/entities/region.entity';
+import { DistrictEntity } from 'src/modules/districts/entites/district.entity';
 
 export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
   type: 'postgres' as const,
@@ -32,6 +34,8 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
     EmailVerificationToken,
     OTPCodeEntity,
     Ride,
+    RegionEntity,
+    DistrictEntity,
   ],
   dropSchema: true,
 

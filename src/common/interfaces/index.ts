@@ -9,3 +9,6 @@ export * from './Review';
 export * from './User';
 export * from './Vehicle';
 export * from './OTPCode';
+export * from './Region';
+export * from './District';
+export * from './Booking';
