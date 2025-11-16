@@ -15,6 +15,8 @@ import { RideRequestsModule } from '../ride-requests/ride-requests.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ChatModule } from '../chat/chat.module';
+import { RegionsModule } from '../regions/regions.module';
+import { DistrictsModule } from '../districts/districts.module';
 
 @Module({
   controllers: [AppController],
@@ -38,6 +40,8 @@ import { ChatModule } from '../chat/chat.module';
     BookingsModule,
     NotificationsModule,
     ChatModule,
+    RegionsModule,
+    DistrictsModule,
   ],
 })
 export class AppModule {}

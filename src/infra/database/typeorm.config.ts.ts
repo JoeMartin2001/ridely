@@ -8,8 +8,7 @@ import { Environment } from '../config/env.validation';
 import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
 import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
-import { RegionEntity } from 'src/modules/regions/entities/region.entity';
-import { DistrictEntity } from 'src/modules/districts/entites/district.entity';
+import { join } from 'path';
 
 export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
   type: 'postgres' as const,
@@ -20,6 +19,9 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
   database: config.get<string>('database.name'),
   ssl: config.get<boolean>('database.ssl'),
   autoLoadEntities: true,
+
+  // Synchronize enabled for all tables - migrations handle regions/districts separately
+  // Migration runs after synchronize and will drop/recreate regions/districts with seed data
   synchronize: [Environment.Development, Environment.Local].includes(
     config.get<Environment>('app.nodeEnv')!,
   ), // use migrations instead
@@ -34,10 +36,13 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
     EmailVerificationToken,
     OTPCodeEntity,
     Ride,
-    RegionEntity,
-    DistrictEntity,
   ],
   dropSchema: true,
+
+  // Migrations - use .js for compiled migrations (works in both dev and prod)
+  migrations: [join(__dirname, '../migrations/*.js')],
+  // Run migrations automatically to seed regions and districts data
+  migrationsRun: true,
 
   namingStrategy: new SnakeNamingStrategy(),
 });
