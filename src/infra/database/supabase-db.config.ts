@@ -44,14 +44,9 @@ export const supabaseDbConfig = (
       RegionEntity,
       DistrictEntity,
     ],
-
-    // Synchronize should be false when using migrations
-    // Disabled to prevent conflicts with migrations
-    synchronize: false,
-
     // Drop schema in local development only (dangerous - use with caution)
-    dropSchema:
-      configService.get<Environment>('app.nodeEnv') === Environment.Local,
+    // dropSchema:
+    //   configService.get<Environment>('app.nodeEnv') === Environment.Local,
 
     // Logging
     logging: [Environment.Development, Environment.Local].includes(
@@ -60,7 +55,13 @@ export const supabaseDbConfig = (
 
     // Migrations - use .js for compiled migrations (works in both dev and prod)
     migrations: [join(__dirname, '../migrations/*.js')],
-    migrationsRun: true,
+    migrationsRun: false,
+
+    // Synchronize should be false when using migrations
+    // Disabled to prevent conflicts with migrations
+    synchronize: [Environment.Development, Environment.Local].includes(
+      configService.get<Environment>('app.nodeEnv')!,
+    ),
 
     // Other options
     connectTimeoutMS: 10000, // 10 seconds
