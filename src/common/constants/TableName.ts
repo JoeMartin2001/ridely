@@ -11,6 +11,8 @@ export const TableName = {
   NOTIFICATIONS: 'notifications',
   VEHICLES: 'vehicles',
   PAYMENTS: 'payments',
-  REVIEW: 'review',
+  REVIEWS: 'reviews',
   REVIEW_RATINGS: 'review_ratings',
+  RIDE_REQUESTS: 'ride_requests',
+  RIDE_RULES: 'ride_rules',
 } as const;

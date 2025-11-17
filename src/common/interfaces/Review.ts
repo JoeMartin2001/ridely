@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export interface IReview {
   id: string;
   bookingId: string;
@@ -13,6 +15,11 @@ export enum ReviewType {
   DRIVER_REVIEW = 'driver_review',
   PASSENGER_REVIEW = 'passenger_review',
 }
+
+registerEnumType(ReviewType, {
+  name: 'ReviewType',
+  description: 'Type of review',
+});
 
 export interface IRatingSummary {
   userId: string;

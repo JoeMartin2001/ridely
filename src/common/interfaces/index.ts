@@ -14,3 +14,4 @@ export * from './District';
 export * from './Booking';
 export * from './ChatRoom';
 export * from './ChatMessage';
+export * from './RideRequest';
