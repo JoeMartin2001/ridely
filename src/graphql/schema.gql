@@ -13,9 +13,52 @@ type Booking {
   exampleField: Int!
 }
 
-type Chat {
-  """Example field (placeholder)"""
-  exampleField: Int!
+type ChatMessage {
+  chatRoomId: String!
+  createdAt: DateTime!
+  id: ID!
+  isRead: Boolean!
+  message: String!
+  receiverId: String!
+  rideId: String!
+  senderId: String!
+  status: ChatMessageStatus!
+  type: ChatMessageType!
+  updatedAt: DateTime!
+}
+
+"""Chat message status"""
+enum ChatMessageStatus {
+  DELIVERED
+  FAILED
+  PENDING
+  READ
+  SENT
+}
+
+"""Chat message type"""
+enum ChatMessageType {
+  IMAGE
+  TEXT
+  VOICE
+}
+
+type ChatRoom {
+  createdAt: DateTime!
+  id: ID!
+  messages: [ChatMessage!]!
+  receiverId: String!
+  rideId: String!
+  senderId: String!
+  status: ChatRoomStatus!
+  updatedAt: DateTime!
+}
+
+"""Chat room status"""
+enum ChatRoomStatus {
+  ACTIVE
+  DELETED
+  INACTIVE
 }
 
 type Coordinate {
@@ -33,9 +76,24 @@ input CreateBookingInput {
   exampleField: Int!
 }
 
-input CreateChatInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input CreateChatMessageInput {
+  chatRoomId: String!
+  id: String!
+  isRead: Boolean!
+  message: String!
+  receiverId: String!
+  rideId: String!
+  senderId: String!
+  status: ChatMessageStatus!
+  type: ChatMessageType!
+}
+
+input CreateChatRoomInput {
+  id: String!
+  receiverId: String!
+  rideId: String!
+  senderId: String!
+  status: ChatRoomStatus!
 }
 
 input CreateNotificationInput {
@@ -104,14 +162,16 @@ enum IUserType {
 
 type Mutation {
   createBooking(createBookingInput: CreateBookingInput!): Booking!
-  createChat(createChatInput: CreateChatInput!): Chat!
+  createChatMessage(createChatMessageInput: CreateChatMessageInput!): ChatMessage!
+  createChatRoom(createChatRoomInput: CreateChatRoomInput!): ChatRoom!
   createNotification(createNotificationInput: CreateNotificationInput!): Notification!
   createRide(createRideInput: CreateRideInput!): Ride!
   createRideRequest(createRideRequestInput: CreateRideRequestInput!): RideRequest!
   createUser(createUserInput: CreateUserInput!): User!
   createVehicle(createVehicleInput: CreateVehicleInput!): Vehicle!
   removeBooking(id: Int!): Booking!
-  removeChat(id: Int!): Chat!
+  removeChatMessage(id: String!): ChatMessage!
+  removeChatRoom(id: String!): ChatRoom!
   removeNotification(id: Int!): Notification!
   removeRide(id: String!): Ride!
   removeRideRequest(id: Int!): RideRequest!
@@ -123,7 +183,8 @@ type Mutation {
   sendPhoneOtp(phoneNumber: String!): Boolean!
   telegramAuth(input: TelegramAuthInput!): Auth!
   updateBooking(updateBookingInput: UpdateBookingInput!): Booking!
-  updateChat(updateChatInput: UpdateChatInput!): Chat!
+  updateChatMessage(updateChatMessageInput: UpdateChatMessageInput!): ChatMessage!
+  updateChatRoom(updateChatRoomInput: UpdateChatRoomInput!): ChatRoom!
   updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
   updateRide(updateRideInput: UpdateRideInput!): Ride!
   updateRideRequest(updateRideRequestInput: UpdateRideRequestInput!): RideRequest!
@@ -145,7 +206,8 @@ type PresignedUrl {
 type Query {
   booking(id: Int!): Booking!
   bookings: [Booking!]!
-  chat(id: Int!): Chat!
+  chatMessage(id: String!): ChatMessage!
+  chatRoom(id: String!): ChatRoom!
   findOne(id: String!): User!
   notification(id: Int!): Notification!
   notifications: [Notification!]!
@@ -192,10 +254,24 @@ input UpdateBookingInput {
   id: Int!
 }
 
-input UpdateChatInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input UpdateChatMessageInput {
+  chatRoomId: String
+  id: String!
+  isRead: Boolean
+  message: String
+  receiverId: String
+  rideId: String
+  senderId: String
+  status: ChatMessageStatus
+  type: ChatMessageType
+}
+
+input UpdateChatRoomInput {
+  id: String!
+  receiverId: String
+  rideId: String
+  senderId: String
+  status: ChatRoomStatus
 }
 
 input UpdateNotificationInput {

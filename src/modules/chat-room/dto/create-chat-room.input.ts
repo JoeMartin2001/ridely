@@ -4,6 +4,9 @@ import { ChatRoomStatus, IChatRoom } from 'src/common/interfaces';
 @InputType()
 export class CreateChatRoomInput implements Partial<IChatRoom> {
   @Field(() => String)
+  id!: string;
+
+  @Field(() => String)
   rideId!: string;
 
   @Field(() => String)

@@ -1,3 +1,4 @@
+import { registerEnumType } from '@nestjs/graphql';
 import { IChatMessage } from './ChatMessage';
 
 export interface IChatRoom {
@@ -17,3 +18,8 @@ export enum ChatRoomStatus {
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
+
+registerEnumType(ChatRoomStatus, {
+  name: 'ChatRoomStatus',
+  description: 'Chat room status',
+});

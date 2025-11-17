@@ -33,3 +33,8 @@ registerEnumType(ChatMessageStatus, {
   name: 'ChatMessageStatus',
   description: 'Chat message status',
 });
+
+registerEnumType(ChatMessageType, {
+  name: 'ChatMessageType',
+  description: 'Chat message type',
+});

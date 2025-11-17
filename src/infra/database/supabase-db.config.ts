@@ -11,6 +11,8 @@ import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
 import { PasswordResetToken } from 'src/modules/auth/entities/password-reset-token.entity';
 import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
 import { Environment } from '../config/env.validation';
+import { ChatRoom } from 'src/modules/chat-room/entities/chat-room.entity';
+import { ChatMessage } from 'src/modules/chat-message/entities/chat-message.entity';
 
 export const supabaseDbConfig = (
   configService: ConfigService,
@@ -40,6 +42,8 @@ export const supabaseDbConfig = (
       OTPCodeEntity,
       PasswordResetToken,
       EmailVerificationToken,
+      ChatRoom,
+      ChatMessage,
       // RegionEntity and DistrictEntity excluded - handled by migrations
     ],
     // Drop schema in local/development to fix existing NULL values issue
