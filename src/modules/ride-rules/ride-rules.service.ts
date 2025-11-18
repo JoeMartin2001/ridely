@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRideRuleInput } from './dto/create-ride-rule.input';
 import { UpdateRideRuleInput } from './dto/update-ride-rule.input';
+import { Repository } from 'typeorm';
+import { RideRule } from './entities/ride-rule.entity';
 
 @Injectable()
 export class RideRulesService {
+  constructor(private readonly rideRuleRepository: Repository<RideRule>) {}
+
   create(createRideRuleInput: CreateRideRuleInput) {
-    return 'This action adds a new rideRule';
+    return this.rideRuleRepository.save(createRideRuleInput);
   }
 
   findAll() {
-    return `This action returns all rideRules`;
+    return this.rideRuleRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rideRule`;
+  findOne(id: string) {
+    return this.rideRuleRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateRideRuleInput: UpdateRideRuleInput) {
-    return `This action updates a #${id} rideRule`;
+  update(id: string, updateRideRuleInput: UpdateRideRuleInput) {
+    return this.rideRuleRepository.update(id, updateRideRuleInput);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} rideRule`;
+  remove(id: string) {
+    return this.rideRuleRepository.delete(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { RideRulesService } from './ride-rules.service';
 import { RideRule } from './entities/ride-rule.entity';
 import { CreateRideRuleInput } from './dto/create-ride-rule.input';
@@ -9,7 +9,9 @@ export class RideRulesResolver {
   constructor(private readonly rideRulesService: RideRulesService) {}
 
   @Mutation(() => RideRule)
-  createRideRule(@Args('createRideRuleInput') createRideRuleInput: CreateRideRuleInput) {
+  createRideRule(
+    @Args('createRideRuleInput') createRideRuleInput: CreateRideRuleInput,
+  ) {
     return this.rideRulesService.create(createRideRuleInput);
   }
 
@@ -19,17 +21,22 @@ export class RideRulesResolver {
   }
 
   @Query(() => RideRule, { name: 'rideRule' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.rideRulesService.findOne(id);
   }
 
   @Mutation(() => RideRule)
-  updateRideRule(@Args('updateRideRuleInput') updateRideRuleInput: UpdateRideRuleInput) {
-    return this.rideRulesService.update(updateRideRuleInput.id, updateRideRuleInput);
+  updateRideRule(
+    @Args('updateRideRuleInput') updateRideRuleInput: UpdateRideRuleInput,
+  ) {
+    return this.rideRulesService.update(
+      updateRideRuleInput.id,
+      updateRideRuleInput,
+    );
   }
 
   @Mutation(() => RideRule)
-  removeRideRule(@Args('id', { type: () => Int }) id: number) {
+  removeRideRule(@Args('id', { type: () => String }) id: string) {
     return this.rideRulesService.remove(id);
   }
 }

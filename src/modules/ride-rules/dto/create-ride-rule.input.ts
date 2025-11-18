@@ -1,8 +1,8 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { RuleType } from 'src/common/interfaces';
+import { IRideRule, RuleType } from 'src/common/interfaces';
 
 @InputType()
-export class CreateRideRuleInput {
+export class CreateRideRuleInput implements Partial<IRideRule> {
   @Field(() => String)
   description!: string;
 
