@@ -18,6 +18,7 @@ import { RegionsModule } from '../regions/regions.module';
 import { DistrictsModule } from '../districts/districts.module';
 import { ChatRoomModule } from '../chat-room/chat-room.module';
 import { ChatMessageModule } from '../chat-message/chat-message.module';
+import { CacheModule } from 'src/infra/cache/cache.module';
 
 @Module({
   controllers: [AppController],
@@ -31,6 +32,7 @@ import { ChatMessageModule } from '../chat-message/chat-message.module';
     HealthModule,
     MetricsModule,
     StorageModule.forRoot(),
+    CacheModule,
 
     UserModule,
     AuthModule,
