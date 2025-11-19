@@ -58,9 +58,9 @@ export const supabaseDbConfig = (
     ],
     // Drop schema in local/development to fix existing NULL values issue
     // This will drop and recreate tables, allowing synchronize to work properly
-    dropSchema: [Environment.Development, Environment.Local].includes(
-      configService.get<Environment>('app.nodeEnv')!,
-    ),
+    // dropSchema: [Environment.Development, Environment.Local].includes(
+    //   configService.get<Environment>('app.nodeEnv')!,
+    // ),
 
     // Logging
     logging: [Environment.Development, Environment.Local].includes(
