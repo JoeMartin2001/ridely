@@ -12,8 +12,8 @@ import { Environment } from '../config/env.validation';
 
 const i18nPath =
   process.env.NODE_ENV === Environment.Production
-    ? join(process.cwd(), 'dist/i18n/')
-    : join(process.cwd(), 'src/i18n/');
+    ? join(process.cwd(), 'dist/infra/i18n/locales/')
+    : join(process.cwd(), 'src/infra/i18n/locales/');
 
 @Module({
   imports: [

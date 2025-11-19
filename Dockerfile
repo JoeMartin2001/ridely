@@ -11,7 +11,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # ✅ copy translations into dist
-COPY src/i18n ./dist/i18n 
+COPY src/infra/i18n/locales ./dist/infra/i18n/locales 
 
 RUN npm run build
 
