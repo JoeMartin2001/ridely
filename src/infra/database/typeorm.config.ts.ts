@@ -54,7 +54,7 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
   dropSchema: true,
 
   // Migrations - use .js for compiled migrations (works in both dev and prod)
-  migrations: [join(__dirname, '../migrations/*.js')],
+  migrations: [join(__dirname, './migrations/*.js')],
   // Run migrations automatically to seed regions and districts data
   migrationsRun: true,
 
