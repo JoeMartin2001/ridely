@@ -21,6 +21,7 @@ import { ChatMessageModule } from '../chat-message/chat-message.module';
 import { CacheModule } from 'src/infra/cache/cache.module';
 import { RequestIdMiddleware } from 'src/infra/logger/middlewares/request-id.middleware';
 import { LoggerModule } from 'src/infra/logger/logger.module';
+import { QueueModule } from 'src/infra/queue/queue.module';
 
 @Module({
   controllers: [AppController],
@@ -36,6 +37,7 @@ import { LoggerModule } from 'src/infra/logger/logger.module';
     StorageModule.forRoot(),
     CacheModule,
     LoggerModule,
+    QueueModule,
 
     UserModule,
     AuthModule,
